@@ -25,8 +25,9 @@ jobs:
       - name: Run container
         run: docker run -d -p 8080:80 --name test-nginx my-nginx
 
-      - name: Test container
-        run: docker exec test-nginx curl -s http://localhost | grep "Hello"
+      - name: Test container with curl
+        run: curl -s http://localhost:8080 | grep "Welcome"
 
       - name: Cleanup
         run: docker stop test-nginx && docker rm test-nginx
+
