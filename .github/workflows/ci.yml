@@ -17,5 +17,8 @@ jobs:
       - name: Run container
         run: docker run -d -p 8080:80 --name test-nginx my-nginx
 
+      - name: Show container logs
+        run: docker logs test-nginx
+
       - name: Test container with curl
-        run: curl -v http://localhost:8080
+        run: docker exec test-nginx curl -v http://localhost
