@@ -1,4 +1,4 @@
-name: CI - Build & Test Docker Image
+name: CI - Optimized
 
 on: [push]
 
@@ -11,14 +11,22 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Build Docker image
         run: docker build -t my-nginx .
 
       - name: Run container
         run: docker run -d -p 8080:80 --name test-nginx my-nginx
 
-      - name: Show container logs
-        run: docker logs test-nginx
+      - name: Test container
+        run: docker exec test-nginx curl -s http://localhost | grep "Hello"
 
-      - name: Test container with curl
-        run: docker exec test-nginx curl -v http://localhost
+      - name: Cleanup
+        run: docker stop test-nginx && docker rm test-nginx
